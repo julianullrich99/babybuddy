@@ -1,6 +1,15 @@
+// Core views.
+
 #view-core\:child {
     .child-photo {
         max-width: 150px;
+    }
+
+    .child-name {
+        font-size: 2.25rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        margin-top: 1rem;
     }
 }
 

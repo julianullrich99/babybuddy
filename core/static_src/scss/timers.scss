@@ -1,7 +1,36 @@
 @use 'sass:map';
 
+// Timers.
+
 #timer-status {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+
+    // The unit suffixes are secondary to the digits themselves.
+    .timer-hours,
+    .timer-minutes,
+    .timer-seconds {
+        color: $gray-100;
+    }
+
     &.timer-stopped {
-        color: map.get($theme-colors, 'dark');
+        color: $gray-500;
+    }
+}
+
+// Timer detail hero panel. The template marks it with a bare `.bg` class, so
+// the panel is scoped to the view instead.
+#view-core\:timer-detail {
+    .bg {
+        background-color: $surface-1;
+        border: 1px solid $surface-border;
+        border-radius: $border-radius-xxl;
+        box-shadow: var(--bb-shadow-sm);
+    }
+
+    // Stacked full-width actions read better with a little less weight.
+    .btn-lg {
+        border-radius: $border-radius-lg;
     }
 }

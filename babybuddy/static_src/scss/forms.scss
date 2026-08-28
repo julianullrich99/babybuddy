@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use 'sass:map';
 
 // Baby Buddy form style customizations.
@@ -6,6 +7,39 @@
 .invalid-feedback {
     display: block;
 }
+
+.col-form-label {
+    color: $gray-400;
+}
+
+.form-control,
+.form-select {
+    transition: border-color var(--bb-transition), box-shadow var(--bb-transition),
+        background-color var(--bb-transition);
+
+    &:hover:not(:focus):not(:disabled) {
+        border-color: $gray-600;
+    }
+}
+
+// Tweak padding on form field help blocks.
+.help-block {
+    font-size: 0.8125rem;
+    color: $gray-500;
+
+    ul {
+        padding-left: 1rem;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Choice pills
+// Radio groups rendered as selectable pills (feeding method, diaper contents,
+// child pickers). The input itself is visually hidden and the label carries the
+// selected state.
+// ---------------------------------------------------------------------------
 
 // Disable hover effect on buttons (used for checkbox buttons).
 .btn-no-hover {
@@ -20,19 +54,6 @@
     pointer-events: none;
 }
 
-// Use a full width, fixed button on smaller screens.
-.submit-primary {
-    display: block;
-    border-radius: 0;
-    width: 100%;
-    padding: 1rem;
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1030;
-}
-
 .pill-container {
     display: flex;
     flex-wrap: wrap;
@@ -40,31 +61,106 @@
     row-gap: 10px;
 }
 
+// The shared pill look. Written as a flat selector list so the rules that
+// follow can layer on top of it in ascending specificity order.
+.pill-container > label.btn,
+.btn-group-toggle > label.btn {
+    border-radius: 50rem;
+    border-color: $surface-border;
+    background-color: $surface-2;
+    color: $gray-300;
+    padding: 0.5rem 1.125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--bb-transition), border-color var(--bb-transition),
+        color var(--bb-transition);
+}
+
+// The child picker renders inside a `.btn-group`, whose negative margins and
+// squared-off inner corners fight the pill treatment. Selectors here are
+// qualified with both classes to match Bootstrap's own specificity.
+.btn-group.btn-group-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    > label.btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: 0;
+        // `.btn-group` children grow to fill the row; these should hug.
+        flex: 0 0 auto;
+        // These pills carry a thumbnail, so they need a squarer shape.
+        border-radius: $border-radius-lg;
+    }
+}
+
+// `.btn-no-hover` pins hover back to `inherit`, so the selected styling has to
+// come from the checked input's sibling label to win.
+.pill-container > input:checked + label.btn,
+.btn-group-toggle > input:checked + label.btn,
+.pill-container > input:checked + label.btn:hover,
+.btn-group-toggle > input:checked + label.btn:hover {
+    background-color: rgba($primary, 0.18);
+    border-color: $primary;
+    color: $gray-100;
+}
+
 // Only grow pill buttons on when using a mobile
 @include media-breakpoint-down(sm) {
-    .pill-container>label {
-            flex-grow: 1;
+    .pill-container > label {
+        flex-grow: 1;
     }
 }
 
-// Tweak padding on form field help blocks.
-.help-block {
-    ul {
-        padding-left: 1rem;
-        padding-bottom: 0;
-        margin-bottom: 0;
-    }
+// ---------------------------------------------------------------------------
+// Advanced fields disclosure
+// ---------------------------------------------------------------------------
+
+.advanced-fields {
+    // removing this causes slight mis-alignment between fields in the details and the rest of the fields
+    //on the form at the left hand side of the box
+    padding-right: 0;
+    border-top: 1px solid $surface-border;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
 }
 
-@include media-breakpoint-up(md) {
-    // Restore regular inline button on larger screens.
-    .submit-primary {
+.advanced-fields__summary {
+    cursor: pointer;
+    color: $gray-400;
+    list-style: none;
+    padding: 0.25rem 0;
+    border-radius: $border-radius;
+    transition: color var(--bb-transition);
+
+    &:hover {
+        color: $gray-100;
+    }
+
+    > * {
+        display: inline;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    // Replace the default disclosure marker with one that follows the label.
+    &::after {
+        content: '';
         display: inline-block;
-        border-radius: $btn-border-radius;
-        width: auto;
-        padding: 0.25rem 0.5rem;
-        position: relative;
+        width: 0.5em;
+        height: 0.5em;
+        margin-left: 0.5rem;
+        border-right: 2px solid currentcolor;
+        border-bottom: 2px solid currentcolor;
+        transform: translateY(-2px) rotate(45deg);
+        transition: transform var(--bb-transition);
     }
+}
+
+details[open] > .advanced-fields__summary::after {
+    transform: translateY(2px) rotate(-135deg);
 }
 
 @include media-breakpoint-down(md) {
@@ -73,12 +169,49 @@
     }
 }
 
-.advanced-fields__summary > * {
-    display: inline
+// ---------------------------------------------------------------------------
+// Primary submit action
+// A docked action bar on small screens, an inline button from `md` up.
+// ---------------------------------------------------------------------------
+
+.submit-primary {
+    display: block;
+    border-radius: 0;
+    width: 100%;
+    padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
+    font-weight: 600;
+    box-shadow: 0 -8px 24px -8px rgba($black, 0.6);
 }
 
-.advanced-fields {
-    // removing this causes slight mis-alignment between fields in the details and the rest of the fields 
-    //on the form at the left hand side of the box
-    padding-right: 0;
+@include media-breakpoint-up(md) {
+    // Restore regular inline button on larger screens.
+    .submit-primary {
+        display: inline-block;
+        border-radius: $btn-border-radius;
+        width: auto;
+        padding: 0.5rem 1.5rem;
+        position: relative;
+        box-shadow: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Filter bar
+// ---------------------------------------------------------------------------
+
+#filter_form {
+    &.show,
+    &.collapsing {
+        background-color: $surface-1;
+        border: 1px solid $surface-border;
+        border-radius: $border-radius-lg;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
 }

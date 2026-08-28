@@ -1,3 +1,46 @@
+// Dashboard layout.
+
 .child-actions {
     flex-wrap: wrap;
+}
+
+// The child cards on the multi-child dashboard use `.border-light`, which is a
+// hard, bright edge against the dark surfaces.
+.child-actions.border-light {
+    border-color: $surface-border !important;
+    border-radius: $border-radius-lg !important;
+    overflow: hidden;
+
+    > .btn {
+        border-radius: 0;
+        color: $gray-300;
+
+        &:hover {
+            background-color: $surface-2;
+            color: $gray-100;
+        }
+    }
+}
+
+#view-dashboard\:dashboard {
+    // Child portraits fill the top of their card.
+    .child-photo {
+        width: 100%;
+        border-top-left-radius: calc(#{$card-border-radius} - 1px);
+        border-top-right-radius: calc(#{$card-border-radius} - 1px);
+    }
+
+    .card {
+        overflow: hidden;
+        transition: transform var(--bb-transition), box-shadow var(--bb-transition);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--bb-shadow);
+        }
+    }
+
+    .card-title {
+        font-size: 1.125rem;
+    }
 }
