@@ -7,15 +7,26 @@
     font-weight: 600;
     letter-spacing: -0.03em;
 
-    // The unit suffixes are secondary to the digits themselves.
+    // A running clock is the focal point of the page; the unit suffixes stay
+    // secondary to the digits themselves.
+    color: $gray-500;
+    text-shadow: 0 0 32px rgba($timer-active, 0.45);
+
     .timer-hours,
     .timer-minutes,
     .timer-seconds {
-        color: $gray-100;
+        color: $timer-active;
     }
 
     &.timer-stopped {
         color: $gray-500;
+        text-shadow: none;
+
+        .timer-hours,
+        .timer-minutes,
+        .timer-seconds {
+            color: $gray-500;
+        }
     }
 }
 

@@ -76,12 +76,43 @@
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label">{{ form_settings.dashboard_cards.label }}</label>
                     <div class="col-sm-10">
-                        {% for card in form_settings.dashboard_cards %}
-                            <div class="form-check">
-                                {{ card.tag }}
-                                <label class="form-check-label" for="{{ card.id_for_label }}">{{ card.choice_label }}</label>
-                            </div>
-                        {% endfor %}
+                        {{ form_settings.dashboard_card_order }}
+                        <ul class="dashboard-card-order list-unstyled">
+                            {% for card in form_settings.dashboard_cards %}
+                                <li class="dashboard-card-order__item"
+                                    data-card-id="{{ card.data.value }}">
+                                    <div class="btn-group btn-group-sm dashboard-card-order__move"
+                                         role="group">
+                                        <button type="button"
+                                                class="btn btn-default"
+                                                data-card-move="up"
+                                                title="{% trans "Move up" %}">
+                                            <i class="icon-arrow-up" aria-hidden="true"></i>
+                                            <span class="visually-hidden">
+                                                {% blocktrans trimmed with name=card.choice_label %}
+                                                    Move {{ name }} up
+                                                {% endblocktrans %}
+                                            </span>
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-default"
+                                                data-card-move="down"
+                                                title="{% trans "Move down" %}">
+                                            <i class="icon-arrow-down" aria-hidden="true"></i>
+                                            <span class="visually-hidden">
+                                                {% blocktrans trimmed with name=card.choice_label %}
+                                                    Move {{ name }} down
+                                                {% endblocktrans %}
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <div class="form-check dashboard-card-order__check">
+                                        {{ card.tag }}
+                                        <label class="form-check-label" for="{{ card.id_for_label }}">{{ card.choice_label }}</label>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
                         <div class="help-block">
                             <small>{{ form_settings.dashboard_cards.help_text }}</small>
                         </div>

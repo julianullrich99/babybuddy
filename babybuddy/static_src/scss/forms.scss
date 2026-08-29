@@ -215,3 +215,48 @@ details[open] > .advanced-fields__summary::after {
         margin-bottom: 0.75rem;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Dashboard card ordering
+// The settings list doubles as the ordering control: each row carries a
+// visibility checkbox and a pair of move buttons.
+// ---------------------------------------------------------------------------
+
+.dashboard-card-order {
+    margin-bottom: 0.75rem;
+    border: 1px solid $surface-border;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+}
+
+.dashboard-card-order__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background-color: $surface-1;
+    border-bottom: 1px solid rgba($white, 0.06);
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    &:hover {
+        background-color: $surface-2;
+    }
+}
+
+.dashboard-card-order__check {
+    margin-bottom: 0;
+    min-height: auto;
+
+    .form-check-label {
+        cursor: pointer;
+    }
+
+    // An unchecked row is hidden from the dashboard; mute it so the visible
+    // set can be read at a glance.
+    .form-check-input:not(:checked) ~ .form-check-label {
+        color: $gray-500;
+    }
+}

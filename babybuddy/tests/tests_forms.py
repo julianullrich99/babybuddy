@@ -9,6 +9,7 @@ from django.utils import timezone
 
 from faker import Faker
 
+from babybuddy.models import Settings
 from core import models
 
 
@@ -302,6 +303,37 @@ class FormsTestCase(TestCase):
         self.assertNotIn("statistics", hidden)
         self.assertNotIn("timer_list", hidden)
         self.assertIn("sleep_last", hidden)
+
+    def test_user_settings_dashboard_card_order(self):
+        self.c.login(**self.credentials)
+
+        # No explicit order is stored by default.
+        self.assertEqual(Settings.objects.get(user=self.user).dashboard_card_order, [])
+
+        params = self.settings_template.copy()
+        params["dashboard_cards"] = ["statistics", "timer_list"]
+        params["dashboard_card_order"] = "statistics,timer_list"
+
+        page = self.c.post("/user/settings/", data=params, follow=True)
+        self.assertEqual(page.status_code, 200)
+        order = Settings.objects.get(user=self.user).dashboard_card_order
+        self.assertEqual(order[:2], ["statistics", "timer_list"])
+        # Every known card is stored, so nothing can be lost by reordering.
+        self.assertIn("sleep_last", order)
+
+    def test_user_settings_dashboard_card_order_ignores_unknown_ids(self):
+        self.c.login(**self.credentials)
+
+        params = self.settings_template.copy()
+        params["dashboard_cards"] = ["statistics"]
+        params["dashboard_card_order"] = "not_a_card,statistics,statistics"
+
+        page = self.c.post("/user/settings/", data=params, follow=True)
+        self.assertEqual(page.status_code, 200)
+        order = Settings.objects.get(user=self.user).dashboard_card_order
+        self.assertNotIn("not_a_card", order)
+        self.assertEqual(order[0], "statistics")
+        self.assertEqual(len(order), len(set(order)))
 
     def test_user_settings_dashboard_cards_include_activity_types(self):
         self.c.login(**self.credentials)

@@ -109,6 +109,15 @@ class Settings(models.Model):
         blank=True,
         default=list,
     )
+    dashboard_card_order = models.JSONField(
+        verbose_name=_("Dashboard card order"),
+        help_text=_(
+            "Order in which cards are shown on child dashboards. Cards not "
+            "listed here are appended in their default order."
+        ),
+        blank=True,
+        default=list,
+    )
     language = models.CharField(
         choices=settings.LANGUAGES,
         default=settings.LANGUAGE_CODE,

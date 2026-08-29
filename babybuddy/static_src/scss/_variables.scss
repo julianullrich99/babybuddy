@@ -42,6 +42,9 @@ $warning: #dfbc72;
 $info: #6fc0cf;
 $error: $danger;
 $debug: #8f9bb3;
+// A running timer is the one thing that should read as "live", so it gets a
+// brighter accent than the calm palette above.
+$timer-active: #5fd4e4;
 $light: $gray-100;
 $dark: $gray-800;
 

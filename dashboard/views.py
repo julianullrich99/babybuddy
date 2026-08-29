@@ -39,6 +39,7 @@ class ChildDashboard(PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ChildDashboard, self).get_context_data(**kwargs)
+        context["dashboard_cards"] = cards.get_dashboard_cards(self.request.user)
         context["visible_cards"] = cards.get_visible_card_ids(self.request.user)
         context["visible_activity_types"] = cards.get_visible_activity_types(
             self.request.user

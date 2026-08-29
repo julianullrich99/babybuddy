@@ -6,6 +6,7 @@ from django.core.management import call_command
 
 from faker import Faker
 
+from babybuddy.models import Settings
 from core.models import ActivityType, Child
 
 
@@ -73,6 +74,55 @@ class ViewsTestCase(TestCase):
         activity_type.save()
         page = self.c.get(url)
         self.assertNotIn(activity_type, page.context["visible_activity_types"])
+
+    def test_child_dashboard_card_order(self):
+        call_command("fake", verbosity=0, children=1, days=1)
+        child = Child.objects.first()
+        url = "/children/{}/dashboard/".format(child.slug)
+
+        page = self.c.get(url)
+        card_ids = [card["id"] for card in page.context["dashboard_cards"]]
+        self.assertEqual(card_ids[0], "timer_list")
+
+        settings = Settings.objects.get(user=self.user)
+        settings.dashboard_card_order = ["statistics", "sleep_last"]
+        settings.save()
+
+        page = self.c.get(url)
+        card_ids = [card["id"] for card in page.context["dashboard_cards"]]
+        self.assertEqual(card_ids[:2], ["statistics", "sleep_last"])
+        # Cards missing from the stored order are appended, not dropped.
+        self.assertIn("timer_list", card_ids)
+
+    def test_child_dashboard_card_order_excludes_hidden(self):
+        call_command("fake", verbosity=0, children=1, days=1)
+        child = Child.objects.first()
+        url = "/children/{}/dashboard/".format(child.slug)
+
+        settings = Settings.objects.get(user=self.user)
+        settings.dashboard_card_order = ["statistics", "sleep_last"]
+        settings.dashboard_hidden_cards = ["statistics"]
+        settings.save()
+
+        page = self.c.get(url)
+        card_ids = [card["id"] for card in page.context["dashboard_cards"]]
+        self.assertNotIn("statistics", card_ids)
+        self.assertEqual(card_ids[0], "sleep_last")
+
+    def test_child_dashboard_card_order_includes_activity_types(self):
+        call_command("fake", verbosity=0, children=1, days=1)
+        child = Child.objects.first()
+        activity_type = ActivityType.objects.create(name="Order Test")
+        url = "/children/{}/dashboard/".format(child.slug)
+
+        settings = Settings.objects.get(user=self.user)
+        settings.dashboard_card_order = [activity_type.card_id]
+        settings.save()
+
+        page = self.c.get(url)
+        cards = page.context["dashboard_cards"]
+        self.assertEqual(cards[0]["id"], activity_type.card_id)
+        self.assertEqual(cards[0]["activity_type"], activity_type)
 
     def test_child_dashboard_hidden_cards(self):
         call_command("fake", verbosity=0, children=1, days=1)

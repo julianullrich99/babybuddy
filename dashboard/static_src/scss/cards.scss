@@ -16,15 +16,15 @@
     border-radius: $card-border-radius;
     background-color: $surface-1;
     border: 1px solid $surface-border;
-    // The accent rule across the top edge is drawn as an inset shadow rather
+    // The accent bar across the top edge is drawn as an inset shadow rather
     // than a pseudo-element so it follows the corner radius exactly.
-    box-shadow: inset 0 2px 0 0 var(--bb-accent), var(--bb-shadow-sm);
+    box-shadow: inset 0 4px 0 0 var(--bb-accent), var(--bb-shadow-sm);
     transition: transform var(--bb-transition), box-shadow var(--bb-transition),
         border-color var(--bb-transition);
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: inset 0 2px 0 0 var(--bb-accent), var(--bb-shadow);
+        box-shadow: inset 0 4px 0 0 var(--bb-accent), var(--bb-shadow);
         border-color: color.mix($white, $surface-border, 8%);
     }
 
@@ -180,7 +180,28 @@
 }
 
 .card-timer {
-    --bb-accent: #{$info};
+    --bb-accent: #{$timer-active};
+
+    // A running timer should be obvious at a glance. The card only contains
+    // list items while timers are actually running, so the live state can be
+    // detected in CSS without touching the template.
+    &:has(.list-group-item) {
+        border-color: rgba($timer-active, 0.4);
+        box-shadow: inset 0 4px 0 0 var(--bb-accent), 0 0 0 1px rgba($timer-active, 0.18),
+            0 0 24px -6px rgba($timer-active, 0.4), var(--bb-shadow);
+
+        .card-header {
+            color: $gray-100;
+        }
+
+        .card-header > .pull-left {
+            background-color: rgba($timer-active, 0.25);
+        }
+
+        .card-title {
+            color: $timer-active;
+        }
+    }
 }
 
 .card-statistics {
